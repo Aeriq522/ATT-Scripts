@@ -4,12 +4,12 @@ import csv
 from pprint import pprint
 from google.cloud import secretmanager
 
-# # Function to fetch GCP credentials from Secret Manager
-# def access_secret_version():
-#     client = secretmanager.SecretManagerServiceClient()
-#     response = client.access_secret_version(request={"name": f"projects/probable-anchor-272920/secrets/att-machine-credentials/versions/latest"})
-#     id, s = json.loads(response.payload.data.decode('UTF-8')).values()
-#     return id, s
+# Function to fetch GCP credentials from Secret Manager
+def access_secret_version():
+    client = secretmanager.SecretManagerServiceClient()
+    response = client.access_secret_version(request={"name": f"projects/probable-anchor-272920/secrets/att-machine-credentials/versions/latest"})
+    id, s = json.loads(response.payload.data.decode('UTF-8')).values()
+    return id, s
 
 # Default headers
 def get_default_headers(id, s):
