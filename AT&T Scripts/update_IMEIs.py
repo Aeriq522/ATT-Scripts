@@ -19,7 +19,7 @@ def get_line_info(subscriber_number: str):
     # subscriber_number = '7608058882'
     url = "https://https://apsapitest01.att.com:8082/sp/mobility/service/" + subscriber_number
     data = {
-        "mode": "R",
+        # "mode": "R",
         # "reasonCode": "CR"
     }
     try:
