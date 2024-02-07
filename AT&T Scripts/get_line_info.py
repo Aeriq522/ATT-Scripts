@@ -31,16 +31,25 @@ def get_line_info(subscriber_number: str, headers):
         print(result_string)
         pprint(response.content)
         
-        # Load JSON data
+    # Load JSON data
         data_dict = response.json()
-        pprint(data_dict.get("status"))
+        # status = data_dict.get("status")
+        # print("Service Status:", status)
+       
+#    # Extract the value of "serviceZipCode" from the nested structure, can extract any other value same way
+#         service_characteristic = data_dict.get('serviceCharacteristic', [])
+#         for characteristic in service_characteristic:
+#             if characteristic.get('name') == 'serviceZipCode':
+#                 service_zip_code = characteristic.get('value')
+#                 # print(f"{subscriber_number}, {service_zip_code}")
+#                 break
+#         else:
+#             print("Service Zip Code not found")
         
         return {'status_code': response.status_code, 'mdn': subscriber_number}
     except Exception:
         return {'status_code': 900, 'mdn': subscriber_number}
         
-    
-# get_line_info('7606811465')
 
 # Read subscriber numbers from CSV file
 csv_file = "C:/Users/eriks/AppData/Local/Programs/Python/Python312/Scripts/AT&T Scripts/subscriber_numbers.csv"
