@@ -29,6 +29,7 @@ def get_line_info(subscriber_number: str, headers):
         response = requests.get(url=url, headers=headers)
         result_string = "Status Code: " + str(response.status_code) + " MDN: " + subscriber_number
         print(result_string)
+        pprint(response.content)
         
         # Load JSON data
         data_dict = response.json()
