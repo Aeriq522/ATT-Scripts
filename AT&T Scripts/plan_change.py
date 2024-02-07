@@ -5,8 +5,6 @@ import csv
 from google.cloud import secretmanager
 from requests import RequestException
 
-import update_IMEIs
-
 success_value = "success"
 failure_value = "failure"
 
@@ -33,52 +31,77 @@ def get_default_headers(id, s):
     }
 
 
-def change_data_plan(subscriber_number: str, headers, singleUserCode, effectiveDate):
-    url = (
-        "https://apsapi.att.com:8082/sp/mobility/lineconfig/api/v1/service/"
-        + subscriber_number
-    )
+# def change_data_plan(subscriber_number: str, headers, singleUserCode, effectiveDate):
+#     url = (
+#         "https://apsapi.att.com:8082/sp/mobility/lineconfig/api/v1/service/"
+#         + subscriber_number
+#     )
 
+#     data = {
+#         "effectiveDate": effectiveDate,
+#         "serviceCharacteristic": [
+#             # {"name": "reasonCode", "value": reasonCode},
+#             {"name": "singleUserCode", "value": singleUserCode},
+#             # {"name": "technologyType", "value": technologyType},
+#             # {"name": "IMEI", "value": IMEI}
+#         ],
+#     }
+
+#     try:
+#         response = requests.patch(url=url, headers=headers, json=data)
+
+#         print(f"Status Code: {str(response.status_code)} MDN: {subscriber_number}")
+
+#         if response.status_code == 200:
+#             return {
+#                 "mdn": {subscriber_number},
+#                 "result": success_value,
+#                 "result_code": 200,
+#                 "result_message": "Service plan changed successfully.",
+#             }
+#         else:
+#             return {
+#                 "mdn": {subscriber_number},
+#                 "result": failure_value,
+#                 "result_code": response.status_code,
+#                 "result_message": "Service plan changed successfully.",
+#             }
+
+#     except RequestException:
+#         connection_error_code = 920
+#         connection_error_message = "Connection failed successfully."
+#         print(f"Status Code: {connection_error_code} MDN: {subscriber_number}")
+#         return {
+#             "mdn": {subscriber_number},
+#             "result": failure_value,
+#             "result_code": connection_error_code,
+#             "result_message": connection_error_message,
+#         }
+        
+        # Function to get line info for a subscriber number
+def update_IMEIs_and_plans(subscriber_number: str, headers, effectiveDate, singleUserCode, IMEI, reasonCode, serviceZipCode, technologyType):
+    url = "https://apsapi.att.com:8082/sp/mobility/lineconfig/api/v1/service/" + subscriber_number
+    
     data = {
         "effectiveDate": effectiveDate,
         "serviceCharacteristic": [
-            # {"name": "reasonCode", "value": reasonCode},
+            {"name": "reasonCode", "value": reasonCode},
+            {"name": "serviceZipCode", "value": serviceZipCode},
             {"name": "singleUserCode", "value": singleUserCode},
-            # {"name": "technologyType", "value": technologyType},
-            # {"name": "IMEI", "value": IMEI}
-        ],
+            {"name": "technologyType", "value": technologyType},
+            {"name": "IMEI", "value": IMEI}
+        ]
     }
-
+    
     try:
         response = requests.patch(url=url, headers=headers, json=data)
-
-        print(f"Status Code: {str(response.status_code)} MDN: {subscriber_number}")
-
-        if response.status_code == 200:
-            return {
-                "mdn": {subscriber_number},
-                "result": success_value,
-                "result_code": 200,
-                "result_message": "Service plan changed successfully.",
-            }
-        else:
-            return {
-                "mdn": {subscriber_number},
-                "result": failure_value,
-                "result_code": response.status_code,
-                "result_message": "Service plan changed successfully.",
-            }
-
-    except RequestException:
-        connection_error_code = 920
-        connection_error_message = "Connection failed successfully."
-        print(f"Status Code: {connection_error_code} MDN: {subscriber_number}")
-        return {
-            "mdn": {subscriber_number},
-            "result": failure_value,
-            "result_code": connection_error_code,
-            "result_message": connection_error_message,
-        }
+        result_string = "Status Code: " + str(response.status_code) + " MDN: " + subscriber_number
+        print(result_string)
+        # print(response.content)
+        
+        return {'status_code': response.status_code, 'mdn': subscriber_number}
+    except Exception:
+        return {'status_code': 900, 'mdn': subscriber_number}
 
 # Read subscriber numbers from CSV file
 csv_file = "C:/Users/eriks/AppData/Local/Programs/Python/Python312/Scripts/AT&T Scripts/planChange.csv"
@@ -99,14 +122,15 @@ with open(csv_file, newline="") as csvfile:
             serviceZipCode,
             technologyType,
         ) = row
-        update_IMEIs.update_IMEIs(
+        update_IMEIs_and_plans(
             subscriber_number,
             headers,
+            effectiveDate,
             singleUserCode,
             IMEI,
             reasonCode,
             serviceZipCode,
             technologyType,
         )
-        change_data_plan(subscriber_number, headers, singleUserCode, effectiveDate)
+        # change_data_plan(subscriber_number, headers, singleUserCode, effectiveDate)
 print("Done")
