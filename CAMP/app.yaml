@@ -1,0 +1,11 @@
+runtime: python312
+entrypoint: gunicorn -b :$PORT main:app
+
+handlers:
+- url: /.*
+  script: auto
+
+env_variables:
+  CLOUDSDK_CORE_PROJECT: coverage-analysis-and-metrics
+  CLOUDSDK_APP_USE_GSUTIL: true
+  CLOUDSDK_APP_STAGING_BUCKET: gs://new-staging-bucket-coverage-analysis-and-metrics/
